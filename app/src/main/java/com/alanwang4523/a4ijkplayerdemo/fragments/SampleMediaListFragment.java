@@ -70,6 +70,7 @@ public class SampleMediaListFragment extends Fragment {
             }
         });
 
+        mAdapter.addItem("https://sf1-hscdn-tos.pstatp.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-360p.mp4", "xgplayer-demo-360p");
         mAdapter.addItem("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4", "big buck bunny");
         mAdapter.addItem("https://media.w3.org/2010/05/sintel/trailer.mp4", "trailer");
         mAdapter.addItem("http://vjs.zencdn.net/v/oceans.mp4", "oceans");

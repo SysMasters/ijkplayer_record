@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "A4ijkplayer"
-include ':A4ijkplayer'
-include ':A4ijkplayerdemo'
+rootProject.name = "ijkplayer_record"
+include ':ijkplayer'
+include ':app'
