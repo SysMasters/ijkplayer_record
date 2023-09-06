@@ -51,6 +51,7 @@ void     *ffp_set_inject_opaque(FFPlayer *ffp, void *opaque);
 void     *ffp_set_ijkio_inject_opaque(FFPlayer *ffp, void *opaque);
 void      ffp_set_option(FFPlayer *ffp, int opt_category, const char *name, const char *value);
 void      ffp_set_option_int(FFPlayer *ffp, int opt_category, const char *name, int64_t value);
+void      ffp_set_option_intptr(FFPlayer *ffp, int opt_category, const char *name, uintptr_t value);
 
 int       ffp_get_video_codec_info(FFPlayer *ffp, char **codec_info);
 int       ffp_get_audio_codec_info(FFPlayer *ffp, char **codec_info);
@@ -117,5 +118,11 @@ void      ffp_set_property_int64(FFPlayer *ffp, int id, int64_t value);
 
 // must be freed with free();
 struct IjkMediaMeta *ffp_get_meta_l(FFPlayer *ffp);
+
+//申明录制视频、截图相关方法
+int       ffp_start_record(FFPlayer *ffp, const char *file_name);
+int       ffp_stop_record(FFPlayer *ffp);
+int       ffp_record_file(FFPlayer *ffp, AVPacket *packet);
+void      ffp_get_current_frame_l(FFPlayer *ffp, uint8_t *frame_buf);
 
 #endif

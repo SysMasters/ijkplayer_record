@@ -65,6 +65,7 @@
 #include "ff_ffmsg_queue.h"
 #include "ff_ffpipenode.h"
 #include "ijkmeta.h"
+#include "ijkavformat/ijklas.h"
 
 #define DEFAULT_HIGH_WATER_MARK_IN_BYTES        (256 * 1024)
 
@@ -91,8 +92,8 @@
 #define MIN_MIN_FRAMES      2
 #define MAX_MIN_FRAMES      50000
 #define MIN_FRAMES (ffp->dcc.min_frames)
-#define EXTERNAL_CLOCK_MIN_FRAMES 2
-#define EXTERNAL_CLOCK_MAX_FRAMES 10
+#define EXTERNAL_CLOCK_MIN_FRAMES 0
+#define EXTERNAL_CLOCK_MAX_FRAMES 2
 
 /* Minimum SDL audio buffer size, in samples. */
 #define SDL_AUDIO_MIN_BUFFER_SIZE 512
@@ -116,8 +117,9 @@
 
 /* external clock speed adjustment constants for realtime sources based on buffer fullness */
 #define EXTERNAL_CLOCK_SPEED_MIN  0.900
-#define EXTERNAL_CLOCK_SPEED_MAX  1.010
-#define EXTERNAL_CLOCK_SPEED_STEP 0.001
+#define EXTERNAL_CLOCK_SPEED_MAX  1.500
+#define EXTERNAL_CLOCK_SPEED_STEP 0.01
+#define EXTERNAL_CLOCK_SPEED_STEP_UP 0.1
 
 /* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
 #define AUDIO_DIFF_AVG_NB   20
@@ -720,6 +722,18 @@ typedef struct FFPlayer {
     char *mediacodec_default_name;
     int ijkmeta_delay_init;
     int render_wait_start;
+    int is_manifest;
+    LasPlayerStatistic las_player_statistic;
+
+    AVFormatContext *m_ofmt_ctx;        // 用于输出的AVFormatContext结构体
+    AVOutputFormat *m_ofmt;
+    pthread_mutex_t record_mutex;       // 锁
+    int is_record;                      // 是否在录制
+    bool real_record;                   //判断关键帧再真正保存
+    int record_error;
+    int is_first;                       // 第一帧数据
+    int64_t start_pts;                  // 开始录制时pts
+    int64_t start_dts;                  // 开始录制时dts
 } FFPlayer;
 
 #define fftime_to_milliseconds(ts) (av_rescale(ts, 1000, AV_TIME_BASE))
@@ -830,6 +844,7 @@ inline static void ffp_reset_internal(FFPlayer *ffp)
     ffp->mediacodec_default_name        = NULL; // option
     ffp->ijkmeta_delay_init             = 0; // option
     ffp->render_wait_start              = 0;
+    ffp->is_manifest                    = 0;
 
     ijkmeta_reset(ffp->meta);
 

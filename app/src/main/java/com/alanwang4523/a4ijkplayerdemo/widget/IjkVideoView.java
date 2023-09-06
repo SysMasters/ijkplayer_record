@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -37,6 +38,7 @@ import android.widget.MediaController;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -1257,5 +1259,65 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     public int getSelectedTrack(int trackType) {
         return MediaPlayerCompat.getSelectedTrack(mMediaPlayer, trackType);
+    }
+
+    /**
+     * 录制视频相关 =========================================================================
+     */
+    //截图
+    public boolean snapshotPicture(final File file) {
+        if (mMediaPlayer == null) {
+            return false;
+        }
+
+        int width = mMediaPlayer.getVideoWidth();
+        int height = mMediaPlayer.getVideoHeight();
+        final Bitmap srcBitmap = Bitmap.createBitmap(width,
+                height, Bitmap.Config.ARGB_8888);
+        boolean flag = mMediaPlayer.getCurrentFrame(srcBitmap);
+        if (flag) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    saveBitmap(file, srcBitmap);
+                }
+            }).start();
+        }
+        return flag;
+    }
+
+    private void saveBitmap(File file, Bitmap srcBitmap) {
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            srcBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //开始录像
+    public boolean startRecord(String path) {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.startRecord(path) == 0;
+        }
+        return false;
+    }
+
+    //结束录像
+    public void stopRecord() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stopRecord();
+        }
     }
 }
