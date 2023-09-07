@@ -180,7 +180,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
 //                    Toast.makeText(MainActivity.this, "视频尚未成功播放", Toast.LENGTH_SHORT).show();
 //                    return;
 //                }
-            String shotPath = getExternalFilesDir("").getAbsolutePath() + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
+            String shotPath = getExternalFilesDir("").getAbsolutePath() + "/" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".jpg";
             File file = new File(shotPath);
             file.getParentFile().mkdirs();
             if (!file.exists()) {
@@ -209,7 +209,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
                 countDownTimer.cancel();
             } else {
 
-                recordingFilePath = getExternalFilesDir(null).getAbsolutePath() +
+                recordingFilePath = getExternalFilesDir(null).getAbsolutePath() + "/" +
                         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ".mov";
 
                 startRecord(recordingFilePath);
